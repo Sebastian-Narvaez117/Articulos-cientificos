@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Sistemas Operativos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            margin: 20px 30px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .question-container {
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options {
+            list-style: none;
+        }
+
+        .option {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            border-color: #4facfe;
+        }
+
+        .option.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .option.correct {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+
+        .option.incorrect {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        .option input[type="radio"], .option input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin: 10px 0;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .text-input.correct {
+            border-color: #4caf50;
+            background: #e8f5e8;
+        }
+
+        .text-input.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .navigation {
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .question-counter {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .results {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+            color: #4facfe;
+            margin: 20px 0;
+        }
+
+        .score-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .review-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .review-question {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #6c757d;
+        }
+
+        .review-question.correct {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .review-question.incorrect {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .review-question-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .review-answer {
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+
+        .answer-label {
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .correct-label {
+            color: #28a745;
+        }
+
+        .incorrect-label {
+            color: #dc3545;
+        }
+
+        .your-answer {
+            color: #666;
+        }
+
+        .correct-answer-review {
+            color: #28a745;
+        }
+
+        .toggle-review {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-review:hover {
+            background: #138496;
+        }
+
+        .correct-answer {
+            color: #4caf50;
+            font-weight: 600;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .explanation {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #4facfe;
+            display: none;
+        }
+
+        .show-answer-btn {
+            background: #17a2b8;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .show-answer-btn:hover {
+            background: #138496;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .question {
+                font-size: 1.1em;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ Cuestionario de Sistemas Operativos</h1>
+            <p>25 preguntas aleatorias para repasar conceptos fundamentales</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="questionContainer" class="question-container">
+            <!-- Las preguntas se cargarán aquí dinámicamente -->
+        </div>
+
+        <div class="navigation">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>⬅️ Anterior</button>
+            <span class="question-counter" id="questionCounter">Pregunta 1 de 25</span>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Siguiente ➡️</button>
+        </div>
+
+        <div class="results" id="results">
+            <h2>🎉 ¡Cuestionario Completado!</h2>
+            <div class="score" id="finalScore">0/25</div>
+            <div class="score-text" id="scoreText"></div>
+            <button class="toggle-review" onclick="toggleReview()">📋 Ver Revisión Detallada</button>
+            <button class="btn btn-primary" onclick="restartQuiz()">🔄 Reiniciar Cuestionario</button>
+            
+            <div class="review-section" id="reviewSection" style="display: none;">
+                <h3>📊 Revisión de Respuestas</h3>
+                <div id="reviewContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Cuál es la diferencia principal entre Máquinas Virtuales y Contenedores?",
+                type: "open",
+                correctAnswer: "Las máquinas virtuales virtualizan un sistema operativo completo en el sistema host, mientras que los contenedores virtualizan el sistema operativo para ejecutar aplicaciones específicas. Las máquinas virtuales funcionan a nivel de hardware, mientras que los contenedores a nivel del sistema operativo."
+            },
+            {
+                question: "¿Para qué sirve el hipervisor en las Máquinas Virtuales?",
+                type: "open",
+                correctAnswer: "El hipervisor crea y ejecuta máquinas virtuales y permite que diferentes sistemas operativos funcionen simultáneamente en un sistema."
+            },
+            {
+                question: "¿Cuáles son los servicios del Sistema Operativo útiles para el usuario?",
+                type: "multiple",
+                options: [
+                    "Asignación de Recursos",
+                    "Protección y Seguridad", 
+                    "Ejecución de Programas",
+                    "Operaciones de E/S"
+                ],
+                correctAnswers: [0, 1, 2, 3]
+            },
+            {
+                question: "¿Las principales funciones del kernel son?",
+                type: "multiple",
+                options: [
+                    "Administrar los dispositivos",
+                    "Administrar la Cache",
+                    "Administrar la RAM",
+                    "Administrar la CPU"
+                ],
+                correctAnswers: [0, 1, 2, 3]
+            },
+            {
+                question: "¿Seleccione las capas que integran el Sistema Operativo MacOS?",
+                type: "multiple",
+                options: [
+                    "Kernel",
+                    "Entorno de programación",
+                    "Interfaz gráfica",
+                    "Intérprete de comandos",
+                    "Sistema de Gráficos"
+                ],
+                correctAnswers: [0, 1, 2, 3, 4]
+            },
+            {
+                question: "¿El núcleo que usa Mac OS se lo denomina híbrido debido a que en su arquitectura incluye componentes basados en...?",
+                type: "single",
+                options: [
+                    "Microkernel y Módulos",
+                    "Capas y Micronúcleo", 
+                    "Monolítico y Micronúcleo",
+                    "Capas y Monolíticos"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "¿La estructura del Sistema Operativo Android está basada en?",
+                type: "single",
+                options: [
+                    "Fedora",
+                    "Unix",
+                    "Linux",
+                    "Opera"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "¿La arquitectura del sistema operativo Linux es?",
+                type: "single",
+                options: [
+                    "Microkernel",
+                    "Monolítica",
+                    "Híbrida",
+                    "Por Capas"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "En MacOS el Kernel del Sistema Operativo se denomina...",
+                type: "open",
+                correctAnswer: "xnu"
+            },
+            {
+                question: "¿Cuáles son las actividades que el Sistema Operativo es responsable en la Gestión de Procesos?",
+                type: "open",
+                correctAnswer: "Crear y borrar los procesos de usuario y del sistema. Suspender y reanudar procesos. Proporcionar mecanismos para la sincronización de procesos. Proporcionar mecanismos para la comunicación entre procesos. Proporcionar mecanismos para el tratamiento de los interbloqueos."
+            },
+            {
+                question: "¿Cuáles son las actividades que el Sistema Operativo es responsable en la Gestión de Memoria?",
+                type: "open",
+                correctAnswer: "Controlar que partes de la memoria están actualmente en uso y por parte de quién. Decidir que datos y procesos añadir o extraer de la memoria. Asignar o liberar espacio de memoria según sea necesario."
+            },
+            {
+                question: "¿Qué es la Multiprogramación?",
+                type: "open",
+                correctAnswer: "Es mantener la RAM llena para que la CPU pueda ejecutar procesos"
+            },
+            {
+                question: "¿Qué es el Temporizador?",
+                type: "open",
+                correctAnswer: "Es asignarle un tiempo a un proceso para su ejecución en la CPU"
+            },
+            {
+                question: "¿Cuál es el objetivo(s) de utilizar un temporizador?",
+                type: "open",
+                correctAnswer: "Evitar que el proceso se quede por ciclos infinitos en la CPU. Mantener el control de la CPU"
+            },
+            {
+                question: "¿Qué es el Contador de Programa?",
+                type: "open",
+                correctAnswer: "Es un campo del proceso que contiene la dirección de la siguiente instrucción a ejecutar"
+            },
+            {
+                question: "¿Cuál es la función del bit de modo?",
+                type: "open",
+                correctAnswer: "Indicar el modo de ejecución (kernel o usuario)"
+            },
+            {
+                question: "¿Qué son los procesos del sistema?",
+                type: "open",
+                correctAnswer: "Son aquellos que se ejecutan en nombre del SO"
+            },
+            {
+                question: "El Planificador de la CPU también se lo conoce como...",
+                type: "open",
+                correctAnswer: "Planificador de procesos"
+            },
+            {
+                question: "¿La Planificación de la CPU permite al sistema organizar los procesos que tienen que pasar a ejecutarse, de acuerdo a ciertos criterios?",
+                type: "boolean",
+                correctAnswer: true
+            },
+            {
+                question: "¿La filosofía del Tiempo compartido implica que se divida la memoria para todos los procesos que quieran ejecutarse?",
+                type: "boolean",
+                correctAnswer: false
+            },
+            {
+                question: "¿El Bloque de Control de Procesos es el espacio de memoria en donde se encuentran almacenados los datos del proceso?",
+                type: "boolean",
+                correctAnswer: true
+            },
+            {
+                question: "¿La funcionalidad de los Sistemas Distribuidos depende netamente del rendimiento y fiabilidad del mismo sistema?",
+                type: "boolean",
+                correctAnswer: false
+            },
+            {
+                question: "¿La principal ventaja de la estructura en niveles es la simplicidad de construcción y depuración?",
+                type: "boolean",
+                correctAnswer: true
+            },
+            {
+                question: "¿En los tipos de memoria caché para los procesadores, una de las diferencias principales es que en la L1 el acceso es más rápido y el almacenamiento es menor que en la L2?",
+                type: "boolean",
+                correctAnswer: true
+            },
+            {
+                question: "¿Los Microkernel es un método que estructura el Sistema Operativo, eliminando los componentes no esenciales del kernel e implementándolos como programas del sistema y de nivel de usuario?",
+                type: "boolean",
+                correctAnswer: true
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        // Mezclar preguntas aleatoriamente
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Seleccionar 25 preguntas aleatorias
+        const selectedQuestions = shuffleArray([...questions]).slice(0, 25);
+
+        function displayQuestion() {
+            const question = selectedQuestions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            let html = `<div class="question">${currentQuestion + 1}. ${question.question}</div>`;
+            
+            if (question.type === 'single') {
+                html += '<ul class="options">';
+                question.options.forEach((option, index) => {
+                    html += `
+                        <li class="option" onclick="selectSingle(${index})">
+                            <input type="radio" name="q${currentQuestion}" value="${index}" id="q${currentQuestion}_${index}">
+                            <label for="q${currentQuestion}_${index}">${option}</label>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+            } else if (question.type === 'multiple') {
+                html += '<ul class="options">';
+                question.options.forEach((option, index) => {
+                    html += `
+                        <li class="option" onclick="selectMultiple(${index})">
+                            <input type="checkbox" name="q${currentQuestion}" value="${index}" id="q${currentQuestion}_${index}">
+                            <label for="q${currentQuestion}_${index}">${option}</label>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+            } else if (question.type === 'boolean') {
+                html += `
+                    <ul class="options">
+                        <li class="option" onclick="selectBoolean(true)">
+                            <input type="radio" name="q${currentQuestion}" value="true" id="q${currentQuestion}_true">
+                            <label for="q${currentQuestion}_true">Verdadero</label>
+                        </li>
+                        <li class="option" onclick="selectBoolean(false)">
+                            <input type="radio" name="q${currentQuestion}" value="false" id="q${currentQuestion}_false">
+                            <label for="q${currentQuestion}_false">Falso</label>
+                        </li>
+                    </ul>
+                `;
+            } else if (question.type === 'open') {
+                html += `
+                    <input type="text" class="text-input" id="openAnswer" placeholder="Escribe tu respuesta aquí..." 
+                           onchange="saveOpenAnswer()" onkeyup="saveOpenAnswer()">
+                    <button class="show-answer-btn" onclick="showCorrectAnswer(${currentQuestion})">Ver respuesta correcta</button>
+                    <div class="correct-answer" id="correctAnswer${currentQuestion}">
+                        <strong>Respuesta correcta:</strong> ${question.correctAnswer}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            
+            // Restaurar respuesta previa si existe
+            if (userAnswers[currentQuestion] !== undefined) {
+                restorePreviousAnswer();
+            }
+            
+            updateProgress();
+            updateNavigation();
+        }
+
+        function selectSingle(index) {
+            userAnswers[currentQuestion] = index;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            document.getElementById(`q${currentQuestion}_${index}`).checked = true;
+        }
+
+        function selectMultiple(index) {
+            if (!userAnswers[currentQuestion]) {
+                userAnswers[currentQuestion] = [];
+            }
+            
+            const checkbox = document.getElementById(`q${currentQuestion}_${index}`);
+            const option = document.querySelectorAll('.option')[index];
+            
+            if (userAnswers[currentQuestion].includes(index)) {
+                userAnswers[currentQuestion] = userAnswers[currentQuestion].filter(i => i !== index);
+                option.classList.remove('selected');
+                checkbox.checked = false;
+            } else {
+                userAnswers[currentQuestion].push(index);
+                option.classList.add('selected');
+                checkbox.checked = true;
+            }
+        }
+
+        function selectBoolean(value) {
+            userAnswers[currentQuestion] = value;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            const selectedOption = value ? 0 : 1;
+            document.querySelectorAll('.option')[selectedOption].classList.add('selected');
+            document.getElementById(`q${currentQuestion}_${value}`).checked = true;
+        }
+
+        function saveOpenAnswer() {
+            const input = document.getElementById('openAnswer');
+            userAnswers[currentQuestion] = input.value;
+        }
+
+        function showCorrectAnswer(questionIndex) {
+            const correctAnswerDiv = document.getElementById(`correctAnswer${questionIndex}`);
+            correctAnswerDiv.style.display = correctAnswerDiv.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function restorePreviousAnswer() {
+            const question = selectedQuestions[currentQuestion];
+            const answer = userAnswers[currentQuestion];
+            
+            if (question.type === 'single' || question.type === 'boolean') {
+                if (answer !== undefined) {
+                    const index = question.type === 'boolean' ? (answer ? 0 : 1) : answer;
+                    document.querySelectorAll('.option')[index].classList.add('selected');
+                    if (question.type === 'boolean') {
+                        document.getElementById(`q${currentQuestion}_${answer}`).checked = true;
+                    } else {
+                        document.getElementById(`q${currentQuestion}_${answer}`).checked = true;
+                    }
+                }
+            } else if (question.type === 'multiple' && Array.isArray(answer)) {
+                answer.forEach(index => {
+                    document.querySelectorAll('.option')[index].classList.add('selected');
+                    document.getElementById(`q${currentQuestion}_${index}`).checked = true;
+                });
+            } else if (question.type === 'open' && answer) {
+                document.getElementById('openAnswer').value = answer;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < selectedQuestions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                calculateScore();
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / selectedQuestions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionCounter').textContent = `Pregunta ${currentQuestion + 1} de ${selectedQuestions.length}`;
+        }
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentQuestion === selectedQuestions.length - 1) {
+                nextBtn.textContent = '🏁 Finalizar';
+            } else {
+                nextBtn.textContent = 'Siguiente ➡️';
+            }
+        }
+
+        function calculateScore() {
+            score = 0;
+            selectedQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                
+                if (question.type === 'single') {
+                    if (userAnswer === question.correctAnswer) score++;
+                } else if (question.type === 'multiple') {
+                    if (Array.isArray(userAnswer) && Array.isArray(question.correctAnswers)) {
+                        const sortedUser = [...userAnswer].sort();
+                        const sortedCorrect = [...question.correctAnswers].sort();
+                        if (JSON.stringify(sortedUser) === JSON.stringify(sortedCorrect)) {
+                            score++;
+                        }
+                    }
+                } else if (question.type === 'boolean') {
+                    if (userAnswer === question.correctAnswer) score++;
+                } else if (question.type === 'open') {
+                    // Para preguntas abiertas, damos por válida cualquier respuesta no vacía
+                    if (userAnswer && userAnswer.trim().length > 0) score++;
+                }
+            });
+        }
+
+        function showResults() {
+            document.getElementById('questionContainer').style.display = 'none';
+            document.querySelector('.navigation').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            const percentage = Math.round((score / selectedQuestions.length) * 100);
+            document.getElementById('finalScore').textContent = `${score}/${selectedQuestions.length}`;
+            
+            let message = '';
+            if (percentage >= 90) {
+                message = '¡Excelente! 🌟 Dominas muy bien los conceptos de Sistemas Operativos';
+            } else if (percentage >= 75) {
+                message = '¡Muy bien! 👍 Tienes un buen conocimiento del tema';
+            } else if (percentage >= 60) {
+                message = 'Bien 👌 Hay algunos conceptos que puedes repasar';
+            } else {
+                message = 'Sigue estudiando 📚 Hay varios temas importantes por repasar';
+            }
+            
+            document.getElementById('scoreText').textContent = `${percentage}% - ${message}`;
+            generateReview();
+        }
+
+        function generateReview() {
+            const reviewContent = document.getElementById('reviewContent');
+            let html = '';
+            
+            selectedQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = checkAnswerCorrect(question, userAnswer, index);
+                
+                html += `
+                    <div class="review-question ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="review-question-title">
+                            ${isCorrect ? '✅' : '❌'} Pregunta ${index + 1}: ${question.question}
+                        </div>
+                        ${generateAnswerReview(question, userAnswer, index)}
+                    </div>
+                `;
+            });
+            
+            reviewContent.innerHTML = html;
+        }
+
+        function checkAnswerCorrect(question, userAnswer, index) {
+            if (question.type === 'single') {
+                return userAnswer === question.correctAnswer;
+            } else if (question.type === 'multiple') {
+                if (!Array.isArray(userAnswer) || !Array.isArray(question.correctAnswers)) return false;
+                const sortedUser = [...userAnswer].sort();
+                const sortedCorrect = [...question.correctAnswers].sort();
+                return JSON.stringify(sortedUser) === JSON.stringify(sortedCorrect);
+            } else if (question.type === 'boolean') {
+                return userAnswer === question.correctAnswer;
+            } else if (question.type === 'open') {
+                return userAnswer && userAnswer.trim().length > 0;
+            }
+            return false;
+        }
+
+        function generateAnswerReview(question, userAnswer, index) {
+            let html = '';
+            
+            if (question.type === 'single') {
+                const userAnswerText = userAnswer !== undefined ? question.options[userAnswer] : 'Sin respuesta';
+                const correctAnswerText = question.options[question.correctAnswer];
+                
+                html += `
+                    <div class="review-answer">
+                        <span class="answer-label your-answer">Tu respuesta:</span> ${userAnswerText}
+                    </div>
+                    <div class="review-answer">
+                        <span class="answer-label correct-answer-review">Respuesta correcta:</span> ${correctAnswerText}
+                    </div>
+                `;
+            } else if (question.type === 'multiple') {
+                const userAnswerTexts = Array.isArray(userAnswer) ? 
+                    userAnswer.map(i => question.options[i]).join(', ') : 'Sin respuesta';
+                const correctAnswerTexts = question.correctAnswers.map(i => question.options[i]).join(', ');
+                
+                html += `
+                    <div class="review-answer">
+                        <span class="answer-label your-answer">Tu respuesta:</span> ${userAnswerTexts}
+                    </div>
+                    <div class="review-answer">
+                        <span class="answer-label correct-answer-review">Respuesta correcta:</span> ${correctAnswerTexts}
+                    </div>
+                `;
+            } else if (question.type === 'boolean') {
+                const userAnswerText = userAnswer !== undefined ? (userAnswer ? 'Verdadero' : 'Falso') : 'Sin respuesta';
+                const correctAnswerText = question.correctAnswer ? 'Verdadero' : 'Falso';
+                
+                html += `
+                    <div class="review-answer">
+                        <span class="answer-label your-answer">Tu respuesta:</span> ${userAnswerText}
+                    </div>
+                    <div class="review-answer">
+                        <span class="answer-label correct-answer-review">Respuesta correcta:</span> ${correctAnswerText}
+                    </div>
+                `;
+            } else if (question.type === 'open') {
+                const userAnswerText = userAnswer || 'Sin respuesta';
+                
+                html += `
+                    <div class="review-answer">
+                        <span class="answer-label your-answer">Tu respuesta:</span> ${userAnswerText}
+                    </div>
+                    <div class="review-answer">
+                        <span class="answer-label correct-answer-review">Respuesta esperada:</span> ${question.correctAnswer}
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+
+        function toggleReview() {
+            const reviewSection = document.getElementById('reviewSection');
+            const toggleBtn = document.querySelector('.toggle-review');
+            
+            if (reviewSection.style.display === 'none') {
+                reviewSection.style.display = 'block';
+                toggleBtn.textContent = '🔼 Ocultar Revisión';
+            } else {
+                reviewSection.style.display = 'none';
+                toggleBtn.textContent = '📋 Ver Revisión Detallada';
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            score = 0;
+            
+            // Mezclar preguntas nuevamente
+            const newSelectedQuestions = shuffleArray([...questions]).slice(0, 25);
+            selectedQuestions.length = 0;
+            selectedQuestions.push(...newSelectedQuestions);
+            
+            document.getElementById('questionContainer').style.display = 'block';
+            document.querySelector('.navigation').style.display = 'flex';
+            document.getElementById('results').style.display = 'none';
+            
+            displayQuestion();
+        }
+
+        // Inicializar el cuestionario
+        displayQuestion();
+    </script>
+</body>
+</html>

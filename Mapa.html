@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Mental: Revisión Sistemática de Literatura</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .mapa-container {
+            width: 1400px;
+            height: 900px;
+            margin: 0 auto;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nodo-central {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            border-radius: 50%;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .nodo-central:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .rama {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .rama:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .rama h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .rama ul {
+            list-style: none;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .rama li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .rama li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: inherit;
+        }
+
+        /* Colores específicos para cada rama */
+        .definicion {
+            top: 100px;
+            left: 200px;
+            width: 280px;
+            border-color: #3498db;
+            color: #2980b9;
+        }
+
+        .objetivos {
+            top: 80px;
+            right: 200px;
+            width: 280px;
+            border-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        .caracteristicas {
+            top: 350px;
+            left: 50px;
+            width: 300px;
+            border-color: #2ecc71;
+            color: #27ae60;
+        }
+
+        .pasos {
+            top: 350px;
+            right: 50px;
+            width: 320px;
+            border-color: #f39c12;
+            color: #e67e22;
+        }
+
+        .criterios {
+            bottom: 200px;
+            left: 150px;
+            width: 280px;
+            border-color: #9b59b6;
+            color: #8e44ad;
+        }
+
+        .ventajas {
+            bottom: 200px;
+            right: 150px;
+            width: 280px;
+            border-color: #1abc9c;
+            color: #16a085;
+        }
+
+        .limitaciones {
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            border-color: #e67e22;
+            color: #d35400;
+        }
+
+        /* Líneas conectoras */
+        .linea {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            z-index: 1;
+        }
+
+        .linea-1 {
+            width: 2px;
+            height: 150px;
+            top: 250px;
+            left: 350px;
+            transform: rotate(-45deg);
+            transform-origin: top;
+        }
+
+        .linea-2 {
+            width: 2px;
+            height: 150px;
+            top: 250px;
+            right: 350px;
+            transform: rotate(45deg);
+            transform-origin: top;
+        }
+
+        .linea-3 {
+            width: 2px;
+            height: 120px;
+            top: 450px;
+            left: 250px;
+            transform: rotate(-90deg);
+        }
+
+        .linea-4 {
+            width: 2px;
+            height: 120px;
+            top: 450px;
+            right: 250px;
+            transform: rotate(90deg);
+        }
+
+        .linea-5 {
+            width: 2px;
+            height: 120px;
+            bottom: 300px;
+            left: 320px;
+            transform: rotate(45deg);
+        }
+
+        .linea-6 {
+            width: 2px;
+            height: 120px;
+            bottom: 300px;
+            right: 320px;
+            transform: rotate(-45deg);
+        }
+
+        .linea-7 {
+            width: 2px;
+            height: 80px;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .titulo {
+            text-align: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 1450px) {
+            .mapa-container {
+                width: 100%;
+                height: 800px;
+            }
+            
+            .rama {
+                font-size: 11px;
+            }
+            
+            .nodo-central {
+                font-size: 16px;
+                width: 180px;
+                height: 180px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="titulo">REVISIÓN SISTEMÁTICA DE LITERATURA</h1>
+    
+    <div class="mapa-container">
+        <!-- Líneas conectoras -->
+        <div class="linea linea-1"></div>
+        <div class="linea linea-2"></div>
+        <div class="linea linea-3"></div>
+        <div class="linea linea-4"></div>
+        <div class="linea linea-5"></div>
+        <div class="linea linea-6"></div>
+        <div class="linea linea-7"></div>
+
+        <!-- Nodo central -->
+        <div class="nodo-central">
+            REVISIÓN<br>SISTEMÁTICA<br>DE<br>LITERATURA
+        </div>
+
+        <!-- Rama Definición -->
+        <div class="rama definicion">
+            <h3>DEFINICIÓN</h3>
+            <ul>
+                <li>Método de investigación riguroso</li>
+                <li>Síntesis exhaustiva de literatura existente</li>
+                <li>Enfoque sistemático y reproducible</li>
+                <li>Minimiza sesgos de selección</li>
+                <li>Protocolo predefinido y transparente</li>
+                <li>Análisis crítico de evidencia</li>
+            </ul>
+        </div>
+
+        <!-- Rama Objetivos -->
+        <div class="rama objetivos">
+            <h3>OBJETIVOS</h3>
+            <ul>
+                <li>Identificar toda la evidencia relevante</li>
+                <li>Evaluar calidad de los estudios</li>
+                <li>Sintetizar hallazgos principales</li>
+                <li>Detectar gaps de conocimiento</li>
+                <li>Informar toma de decisiones</li>
+                <li>Generar nuevas hipótesis</li>
+            </ul>
+        </div>
+
+        <!-- Rama Características -->
+        <div class="rama caracteristicas">
+            <h3>CARACTERÍSTICAS</h3>
+            <ul>
+                <li>Pregunta de investigación específica</li>
+                <li>Estrategia de búsqueda exhaustiva</li>
+                <li>Criterios de inclusión/exclusión</li>
+                <li>Evaluación sistemática de calidad</li>
+                <li>Extracción de datos estandarizada</li>
+                <li>Análisis estadístico (metaanálisis)</li>
+                <li>Interpretación objetiva</li>
+            </ul>
+        </div>
+
+        <!-- Rama Pasos -->
+        <div class="rama pasos">
+            <h3>PASOS DEL PROCESO</h3>
+            <ul>
+                <li>1. Formulación de pregunta PICO</li>
+                <li>2. Diseño del protocolo</li>
+                <li>3. Búsqueda sistemática</li>
+                <li>4. Selección de estudios</li>
+                <li>5. Evaluación de calidad</li>
+                <li>6. Extracción de datos</li>
+                <li>7. Síntesis y análisis</li>
+                <li>8. Interpretación y reporte</li>
+            </ul>
+        </div>
+
+        <!-- Rama Criterios -->
+        <div class="rama criterios">
+            <h3>CRITERIOS DE CALIDAD</h3>
+            <ul>
+                <li>Diseño metodológico apropiado</li>
+                <li>Tamaño de muestra adecuado</li>
+                <li>Control de variables confusoras</li>
+                <li>Medición válida y confiable</li>
+                <li>Análisis estadístico correcto</li>
+                <li>Reporte completo de resultados</li>
+                <li>Consideración de limitaciones</li>
+            </ul>
+        </div>
+
+        <!-- Rama Ventajas -->
+        <div class="rama ventajas">
+            <h3>VENTAJAS</h3>
+            <ul>
+                <li>Reduce sesgos de selección</li>
+                <li>Maximiza poder estadístico</li>
+                <li>Evidencia de alta calidad</li>
+                <li>Proceso reproducible</li>
+                <li>Identificación de inconsistencias</li>
+                <li>Base para guías clínicas</li>
+                <li>Orientación para futuras investigaciones</li>
+            </ul>
+        </div>
+
+        <!-- Rama Limitaciones -->
+        <div class="rama limitaciones">
+            <h3>LIMITACIONES</h3>
+            <ul>
+                <li>Consume mucho tiempo y recursos</li>
+                <li>Dependiente de estudios publicados</li>
+                <li>Sesgo de publicación</li>
+                <li>Heterogeneidad entre estudios</li>
+                <li>Dificultad en síntesis cualitativa</li>
+                <li>Puede volverse obsoleta rápidamente</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Animación de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const ramas = document.querySelectorAll('.rama');
+            const nodoCentral = document.querySelector('.nodo-central');
+            
+            // Animar nodo central
+            nodoCentral.style.opacity = '0';
+            nodoCentral.style.transform = 'translate(-50%, -50%) scale(0.5)';
+            
+            setTimeout(() => {
+                nodoCentral.style.transition = 'all 0.8s ease';
+                nodoCentral.style.opacity = '1';
+                nodoCentral.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 200);
+            
+            // Animar ramas
+            ramas.forEach((rama, index) => {
+                rama.style.opacity = '0';
+                rama.style.transform = 'scale(0.8) translateY(20px)';
+                
+                setTimeout(() => {
+                    rama.style.transition = 'all 0.6s ease';
+                    rama.style.opacity = '1';
+                    rama.style.transform = 'scale(1) translateY(0)';
+                }, 400 + (index * 150));
+            });
+        });
+
+        // Efecto hover para las líneas
+        const ramas = document.querySelectorAll('.rama');
+        ramas.forEach(rama => {
+            rama.addEventListener('mouseenter', function() {
+                this.style.zIndex = '15';
+            });
+            
+            rama.addEventListener('mouseleave', function() {
+                this.style.zIndex = '5';
+            });
+        });
+    </script>
+</body>
+</html>
